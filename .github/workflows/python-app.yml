@@ -1,26 +1,39 @@
-name: Python Tests
+name: Python Tests  # 工作流名称
 
+# 只在dev分支的推送和PR触发（避免其他分支干扰）
 on:
   push:
-    branches: [ main, dev ]  # 确保dev分支的提交会触发工作流
+    branches: [ dev ]
   pull_request:
-    branches: [ main, dev ]
+    branches: [ dev ]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  build-and-test:
+    runs-on: ubuntu-latest  # 使用GitHub提供的Ubuntu环境
+
     steps:
-      - uses: actions/checkout@v4
-      # 新增调试步骤：列出所有文件
-      - name: List files in CI environment
-        run: ls -la
-      - name: Set up Python
+      # 步骤1：拉取当前分支代码（关键：不指定分支，自动拉取触发事件的分支）
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      # 步骤2：调试用，查看CI环境是否有requirements.txt
+      - name: 检查文件是否存在
+        run: |
+          echo "当前目录文件列表："
+          ls -la  # 会显示是否有requirements.txt，方便排查
+
+      # 步骤3：设置Python环境
+      - name: 设置Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-      - name: Install dependencies
+          python-version: '3.12'  # 使用Python 3.12
+
+      # 步骤4：安装依赖（从requirements.txt）
+      - name: 安装依赖
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-      - name: Test with pytest
-        run: pytest
+          python -m pip install --upgrade pip  # 升级pip
+          pip install -r requirements.txt  # 安装requirements.txt中的依赖
+
+      # 步骤5：运行pytest测试
+      - name: 运行测试
+        run: pytest  # 执行测试（默认找tests目录下的测试文件）
