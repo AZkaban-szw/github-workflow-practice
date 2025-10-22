@@ -1,0 +1,22 @@
+name: Docker Build
+
+on:
+  push:
+    branches: [ dev, staging, main ]
+  pull_request:
+    branches: [ dev, staging, main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .  # 构建上下文（当前文件夹）
+        push: false  # 小白先不推镜像，只构建测试
+        tags: my-app:latest  # 镜像名，随便取
